@@ -5,6 +5,8 @@ import {
   insertLink,
   insertImageMarkdown,
   insertCodeBlock,
+  insertHorizontalRule,
+  insertTable,
 } from "../src/markdown-toolbar";
 
 // ============================================================
@@ -150,5 +152,108 @@ describe("insertCodeBlock", () => {
     // cursor is on the empty inner line: after "above\n```\n" = 10
     expect(result.selStart).toBe(10);
     expect(result.selEnd).toBe(10);
+  });
+});
+
+// ============================================================
+// Domain 6: toggleWrap — Strikethrough
+// ============================================================
+
+describe("toggleWrap — strikethrough", () => {
+  test("wraps selected text in ~~ markers", () => {
+    const result = toggleWrap("Hello world", 6, 11, "~~");
+    expect(result).toEqual({ text: "Hello ~~world~~", selStart: 8, selEnd: 13 });
+  });
+
+  test("unwraps already-wrapped ~~text~~", () => {
+    const result = toggleWrap("Hello ~~world~~", 8, 13, "~~");
+    expect(result).toEqual({ text: "Hello world", selStart: 6, selEnd: 11 });
+  });
+
+  test("no selection — inserts ~~~~ at cursor, selStart = cursor+2", () => {
+    const result = toggleWrap("Hello", 5, 5, "~~");
+    expect(result).toEqual({ text: "Hello~~~~", selStart: 7, selEnd: 7 });
+  });
+});
+
+// ============================================================
+// Domain 7: toggleLinePrefix — Ordered list
+// ============================================================
+
+describe("toggleLinePrefix — ordered list", () => {
+  test("adds '1. ' prefix to a line", () => {
+    const result = toggleLinePrefix("Buy milk\nBuy eggs", 0, 8, "1. ");
+    expect(result.text).toBe("1. Buy milk\nBuy eggs");
+  });
+
+  test("removes '1. ' prefix if all lines already have it", () => {
+    const result = toggleLinePrefix("1. Buy milk\n1. Buy eggs", 0, 11, "1. ");
+    expect(result.text).toBe("Buy milk\n1. Buy eggs");
+  });
+});
+
+// ============================================================
+// Domain 8: toggleLinePrefix — Task list
+// ============================================================
+
+describe("toggleLinePrefix — task list", () => {
+  test("adds '- [ ] ' prefix to a line", () => {
+    const result = toggleLinePrefix("Write tests\nImplement", 0, 11, "- [ ] ");
+    expect(result.text).toBe("- [ ] Write tests\nImplement");
+  });
+
+  test("removes '- [ ] ' prefix if all lines already have it", () => {
+    const result = toggleLinePrefix("- [ ] Write tests\n- [ ] Implement", 0, 17, "- [ ] ");
+    expect(result.text).toBe("Write tests\n- [ ] Implement");
+  });
+});
+
+// ============================================================
+// Domain 9: insertHorizontalRule
+// ============================================================
+
+describe("insertHorizontalRule", () => {
+  test("empty doc — inserts \\n\\n---\\n\\n, cursor at end", () => {
+    const result = insertHorizontalRule("", 0, 0);
+    expect(result.text).toBe("\n\n---\n\n");
+    expect(result.selStart).toBe(7);
+    expect(result.selEnd).toBe(7);
+  });
+
+  test("mid-document — inserts at cursor, cursor lands after the block", () => {
+    const result = insertHorizontalRule("before", 6, 6);
+    expect(result.text).toBe("before\n\n---\n\n");
+    // "before" = 6, block = "\n\n---\n\n" = 7, cursor = 6 + 7 = 13
+    expect(result.selStart).toBe(13);
+    expect(result.selEnd).toBe(13);
+  });
+
+  test("with selection — selection is replaced, cursor after block", () => {
+    const result = insertHorizontalRule("before REPLACE after", 7, 14);
+    expect(result.text).toBe("before \n\n---\n\n after");
+    expect(result.selStart).toBe(14);
+    expect(result.selEnd).toBe(14);
+  });
+});
+
+// ============================================================
+// Domain 10: insertTable
+// ============================================================
+
+describe("insertTable", () => {
+  test("empty doc — inserts full GFM table skeleton, cursor at end", () => {
+    const block = "\n\n| Column 1 | Column 2 |\n| --- | --- |\n| Cell | Cell |\n\n";
+    const result = insertTable("", 0, 0);
+    expect(result.text).toBe(block);
+    expect(result.selStart).toBe(block.length);
+    expect(result.selEnd).toBe(block.length);
+  });
+
+  test("mid-doc — inserts at cursor, cursor after block", () => {
+    const block = "\n\n| Column 1 | Column 2 |\n| --- | --- |\n| Cell | Cell |\n\n";
+    const result = insertTable("before", 6, 6);
+    expect(result.text).toBe("before" + block);
+    expect(result.selStart).toBe(6 + block.length);
+    expect(result.selEnd).toBe(6 + block.length);
   });
 });

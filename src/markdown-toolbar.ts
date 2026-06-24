@@ -199,3 +199,41 @@ export function insertCodeBlock(
   const cursorPos = selStart + token.length;
   return { text: newText, selStart: cursorPos, selEnd: cursorPos };
 }
+
+// ============================================================
+// insertHorizontalRule
+// ============================================================
+
+/**
+ * Inserts a horizontal rule (`\n\n---\n\n`) at the cursor, replacing any selection.
+ * Cursor lands after the inserted block.
+ */
+export function insertHorizontalRule(
+  text: string,
+  selStart: number,
+  selEnd: number
+): SelEdit {
+  const block = "\n\n---\n\n";
+  const newText = text.slice(0, selStart) + block + text.slice(selEnd);
+  const cursor = selStart + block.length;
+  return { text: newText, selStart: cursor, selEnd: cursor };
+}
+
+// ============================================================
+// insertTable
+// ============================================================
+
+/**
+ * Inserts a 2-column GFM table skeleton at the cursor, replacing any selection.
+ * Cursor lands at the end of the inserted block.
+ */
+export function insertTable(
+  text: string,
+  selStart: number,
+  selEnd: number
+): SelEdit {
+  const block = "\n\n| Column 1 | Column 2 |\n| --- | --- |\n| Cell | Cell |\n\n";
+  const newText = text.slice(0, selStart) + block + text.slice(selEnd);
+  const cursor = selStart + block.length;
+  return { text: newText, selStart: cursor, selEnd: cursor };
+}

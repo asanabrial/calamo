@@ -4,8 +4,10 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { MediaPickerModal } from "./media-picker-modal";
 import {
   insertCodeBlock,
+  insertHorizontalRule,
   insertImageMarkdown,
   insertLink,
+  insertTable,
   toggleLinePrefix,
   toggleWrap,
   type SelEdit,
@@ -143,7 +145,25 @@ export function Calamo({
           >
             {"`"}
           </button>
+          <button
+            type="button"
+            title="Strikethrough"
+            aria-label="Strikethrough"
+            onClick={() => applyEdit((t, s, e) => toggleWrap(t, s, e, "~~"))}
+            className={btnClass}
+          >
+            <span className="text-xs line-through">S</span>
+          </button>
           <span className="w-px h-4 bg-zinc-300 dark:bg-zinc-600 mx-1" aria-hidden="true" />
+          <button
+            type="button"
+            title="Heading 1"
+            aria-label="Heading 1"
+            onClick={() => applyEdit((t, s, e) => toggleLinePrefix(t, s, e, "# "))}
+            className={btnClass}
+          >
+            <span className="text-xs font-bold">H1</span>
+          </button>
           <button
             type="button"
             title="Heading"
@@ -151,6 +171,15 @@ export function Calamo({
             className={btnClass}
           >
             H2
+          </button>
+          <button
+            type="button"
+            title="Heading 3"
+            aria-label="Heading 3"
+            onClick={() => applyEdit((t, s, e) => toggleLinePrefix(t, s, e, "### "))}
+            className={btnClass}
+          >
+            <span className="text-xs font-bold">H3</span>
           </button>
           <button
             type="button"
@@ -167,6 +196,24 @@ export function Calamo({
             className={btnClass}
           >
             &#8226;
+          </button>
+          <button
+            type="button"
+            title="Ordered list"
+            aria-label="Ordered list"
+            onClick={() => applyEdit((t, s, e) => toggleLinePrefix(t, s, e, "1. "))}
+            className={btnClass}
+          >
+            <span className="text-xs font-mono">1.</span>
+          </button>
+          <button
+            type="button"
+            title="Task list"
+            aria-label="Task list"
+            onClick={() => applyEdit((t, s, e) => toggleLinePrefix(t, s, e, "- [ ] "))}
+            className={btnClass}
+          >
+            <span className="text-xs">☑</span>
           </button>
           <span className="w-px h-4 bg-zinc-300 dark:bg-zinc-600 mx-1" aria-hidden="true" />
           <button
@@ -194,6 +241,24 @@ export function Calamo({
             className={btnClass}
           >
             {`{}`}
+          </button>
+          <button
+            type="button"
+            title="Horizontal rule"
+            aria-label="Horizontal rule"
+            onClick={() => applyEdit((t, s, e) => insertHorizontalRule(t, s, e))}
+            className={btnClass}
+          >
+            <span className="text-xs font-bold">—</span>
+          </button>
+          <button
+            type="button"
+            title="Table"
+            aria-label="Table"
+            onClick={() => applyEdit((t, s, e) => insertTable(t, s, e))}
+            className={btnClass}
+          >
+            <span className="text-xs">▦</span>
           </button>
         </div>
       )}
